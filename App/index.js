@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
   res.json({
-    message: 'Hello from node.js API 🚀',
+    message: 'Hello from Node.js API 🚀',
     hostname: os.hostname(),
     timestamp: new Date().toISOString()
   });
