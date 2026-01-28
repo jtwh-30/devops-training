@@ -1,0 +1,38 @@
+name: Build & Push Docker to ECR
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - app/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & Push Docker Image
+        working-directory: app
+        run: |
+          IMAGE_URI=$(aws ecr describe-repositories \
+            --repository-names node-api \
+            --query 'repositories[0].repositoryUri' \
+            --output text)
+          docker build -t $IMAGE_URI:latest .
+          docker push $IMAGE_URI:latest
