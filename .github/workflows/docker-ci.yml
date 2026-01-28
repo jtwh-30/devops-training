@@ -1,0 +1,22 @@
+name: Docker CI
+
+on:
+  push:
+    paths:
+      - app/**
+  pull_request:
+    paths:
+      - app/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          cd app
+          docker build -t node-api:ci .
